@@ -1,0 +1,64 @@
+<!doctype html>
+
+<html lang='en'>
+  
+<head>
+  <meta charset='utf-8'>
+  <title>Detroit Poverty Rates</title>
+  
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+  
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+<div id='map'></div>
+
+<div class='map-overlay' id='features'><h2>Detroit Poverty Rates</h2><div id='pd'><p>Hover over a Census Tract</p></div></div>
+
+<div class='map-overlay' id='legend'></div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYmlza3dpa21hbiIsImEiOiJjaWxidzVlcGQxcmtxdWJrbjQ2Zng3bWN5In0.KcfLaovMGcEZkl6cyU6_Hw';
+  
+  var map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: 'mapbox://styles/biskwikman/cjguk8hnh000h2ro4shjm9kl1'
+});
+
+map.on('load', function() {
+  var layers = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50%+', 'N/A'];
+  var colors = ['#feefd7', '#fdd49e', '#fdbb84', '#fc8d59', '#e34a33', '#b30000', '#000000'];
+  
+  for (i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var color = colors[i];
+    var item = document.createElement('div');
+    var key = document.createElement('span');
+    key.className = 'legend-key';
+    key.style.backgroundColor = color;
+    
+    var value = document.createElement('span');
+    value.innerHTML = layer;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+  }
+  
+  map.on('mousemove', function(e) {
+    var tracts = map.queryRenderedFeatures(e.point, {
+      layers: ['pov-rate-6xtgtn']
+    });
+    
+    if (tracts.length > 0) {
+      document.getElementById('pd').innerHTML = '<h3><strong> Census Tract ' + tracts[0].properties.tract + '</strong></h3><p><strong><em>' + Math.floor((tracts[0].properties.pov_rate * 100)) +'% </strong>of people in poverty</em><p>';
+    } else {
+      document.getElementById('pd').innerHTML = '<p>Hover over a Census Tract</p>';
+    }
+  });
+});
+</script>
+
+</body>
+</html>
